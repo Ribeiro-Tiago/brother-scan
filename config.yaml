@@ -1,12 +1,12 @@
 menu:
   file:
     User1:
-      dir: /tmp/scan1
+      dir: /output/scan1
       resolution: 200
       width: 210
       height: 297
     User2:
-      dir: /tmp/scan2
+      dir: /output/scan2
       resolution: 200
       width: 210
       height: 297

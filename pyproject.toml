@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brscan"
+version = "1.0.0"
+description = "Service for (some) network scanners from Brother Inc."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+authors = [
+    { name = "Tiago Ribeiro", email = "11082362+Ribeiro-Tiago@users.noreply.github.com" },
+    { name = "Esben Haabendal", email = "esben@haabendal.dk" },
+    { name = "Francois Cauwe" },
+]
+requires-python = ">=3.15.2"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/Ribeiro-Tiago/brother-scan"
+
+[project.scripts]
+brscand = "brscan.brscand:main"
+
+[tool.setuptools]
+packages = ["brscan"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }

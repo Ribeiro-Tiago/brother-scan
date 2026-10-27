@@ -1,19 +1,31 @@
 #!/bin/sh
+set -e
 
 # Environment variables that must be configured:
 #SCANNER_MODEL
 #SCANNER_IP
+#ADVERTISE_IP
 
-# Environment variables that can be configured if needed:
+# Environment variables that can be configured if needed (brscand reads the
+# rest itself: BIND_IP, BIND_PORT, ADVERTISE_PORT, CONFIG_PATH, see README):
 SCANNER_NAME="${SCANNER_NAME:-Brother}"
-BIND_IP="${BIND_IP:-0.0.0.0}"
-ADVERTISE_IP="${ADVERTISE_IP:-${BIND_IP}}"
-CONFIG_FILE="${CONFIG_FILE:-/brother-scan.yaml}"
+# PUID/PGID: run brscand (and so own the scanned files) as this user/group
+# instead of root. PGID defaults to PUID.
+PGID="${PGID:-${PUID}}"
 
-# Setup network scanner
+for var in SCANNER_MODEL SCANNER_IP ADVERTISE_IP; do
+	if [ -z "$(printenv "$var")" ]; then
+		echo "Error: $var must be set" >&2
+		exit 1
+	fi
+done
+
+# Setup network scanner (needs root, writes the driver's config)
 brsaneconfig4 -a \
 	name="${SCANNER_NAME}" model="${SCANNER_MODEL}" ip="${SCANNER_IP}"
 
 # Exec into service
-exec brscand -c "${CONFIG_FILE}" -A "${ADVERTISE_IP}" \
-	"${BIND_IP}" "${SCANNER_IP}"
+if [ -n "$PUID" ]; then
+	exec setpriv --reuid="$PUID" --regid="$PGID" --clear-groups brscand
+fi
+exec brscand
