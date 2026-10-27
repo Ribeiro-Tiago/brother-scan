@@ -43,9 +43,10 @@ def main():
     parser.add_argument('scanner_addr', metavar='SCANNER_ADDR',
                         type=str, nargs='?', default=env('SCANNER_IP'),
                         help='IP address of scanner [SCANNER_IP]')
-    parser.add_argument('-c', '--config', metavar='FILE',
-                        type=str, default=env('CONFIG_PATH', 'config.yaml'),
-                        help='Configuration file [CONFIG_PATH]')
+    parser.add_argument('-c', '--config', metavar='DIR',
+                        type=str, default=env('CONFIG_PATH', '/config'),
+                        help='Configuration directory containing brother.yaml '
+                             '[CONFIG_PATH]')
     args = parser.parse_args()
     if args.scanner_addr is None:
         parser.error('SCANNER_ADDR (or SCANNER_IP env var) is required')
@@ -63,7 +64,7 @@ def main():
     args.scanner_addr = socket.gethostbyname(args.scanner_addr)
 
     # Loading global configuration
-    config = load_config(args.config)
+    config = load_config(os.path.join(args.config, 'brother.yaml'))
 
     # As PID 1 in a container SIGTERM is ignored unless handled, so
     # docker stop would wait for its timeout and then SIGKILL us

@@ -36,7 +36,7 @@ LABEL org.opencontainers.image.source="https://github.com/Ribeiro-Tiago/brother-
 # at build time, so change them with --build-arg, not docker run -e.
 ARG BIND_PORT=54925
 ARG OUTPUT_DIR=/output
-ARG CONFIG_PATH=/config.yaml
+ARG CONFIG_PATH=/config
 ENV BIND_PORT=${BIND_PORT} \
     OUTPUT_DIR=${OUTPUT_DIR} \
     CONFIG_PATH=${CONFIG_PATH} \

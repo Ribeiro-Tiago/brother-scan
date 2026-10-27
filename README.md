@@ -49,10 +49,9 @@ What the container needs:
 * `/output` - where scans are written. Point every menu entry's `dir` at
   a path inside it (e.g. `/output/user1`), not a path like `/tmp/scan1`,
   which would stay inside the container.
-* `/config.yaml` - the config file with the scan menu (or mount it
-  elsewhere and set `CONFIG_PATH`). It must exist on the host: if it
-  doesn't, Docker mounts an empty directory there instead and `brscand`
-  exits with an error saying so.
+* `/config` - a directory containing `brother.yaml`, the scan menu (or
+  mount it elsewhere and set `CONFIG_PATH`). `brscand` exits with an
+  error naming the path if `brother.yaml` isn't there.
 * UDP port `54925` published, and `ADVERTISE_IP` set to the **host's** IP
   as seen by the scanner - the scanner sends its button presses there.
 * `SCANNER_MODEL`, `SCANNER_IP` and `ADVERTISE_IP` - see the env var
@@ -60,12 +59,10 @@ What the container needs:
 * Optionally `PUID`/`PGID`, so scans are owned by that user/group instead
   of root. The `/output` folders must be writable by them.
 
-With a config file:
-
 ```sh
 docker run -d --name brother-scan --restart unless-stopped \
   -v /data/scans:/output \
-  -v $(pwd)/config.yaml:/config.yaml:ro \
+  -v $(pwd)/config:/config:ro \
   -e SCANNER_MODEL=MFC-L2700DW -e SCANNER_IP=192.168.0.10 \
   -e ADVERTISE_IP=192.168.0.100 -p 54925:54925/udp \
   ghcr.io/ribeiro-tiago/brother-scan
@@ -76,9 +73,10 @@ docker run -d --name brother-scan --restart unless-stopped \
 [compose.yaml](compose.yaml) is a ready-to-use stack. In Dockhand, create
 a stack from it and set the values from [.env.example](.env.example) in
 the stack's env (or copy it to `.env` next to `compose.yaml` for plain
-`docker compose up -d`). Put your `config.yaml` (see Configuration) at
-the host path `CONFIG_PATH` points to. Missing required values stop
-`docker compose up` with a message naming them.
+`docker compose up -d`). Put your `brother.yaml` (see Configuration) in
+the host directory `CONFIG_DIR` points to (default `./config`); it's
+mounted at `CONFIG_PATH` (default `/config`). Missing required values
+stop `docker compose up` with a message naming them.
 
 Check the container logs for `Advertising to scanner`, then the users
 should show up under Scan → File on the scanner. The image's healthcheck
@@ -107,7 +105,7 @@ only change with a rebuild):
 |---|---|
 | `BIND_PORT` | `54925` |
 | `OUTPUT_DIR` | `/output` |
-| `CONFIG_PATH` | `/config.yaml` |
+| `CONFIG_PATH` | `/config` |
 
 ## Releasing
 
@@ -125,7 +123,8 @@ existing `vX.Y.Z` tag on `master` to bump from (`v1.0.0` was the first).
 ## Configuration
 
 The scan menu (the users and destinations shown on the scanner) lives
-only in `config.yaml`, or the file `CONFIG_PATH` points at. It can be
+only in `brother.yaml` inside the config directory (`CONFIG_PATH`); see
+[config/brother.yaml](config/brother.yaml) for an example. It can be
 nested arbitrarily deep for organization. Everything else is set with env
 vars:
 
@@ -138,7 +137,7 @@ vars:
 | `ADVERTISE_IP` | (required) | This host's IP as the scanner sees it - scans are sent here |
 | `ADVERTISE_PORT` | `BIND_PORT` | Port advertised to the scanner |
 | `PUID` / `PGID` | root | Run as this user/group, so scans are owned by it (Docker only, `PGID` defaults to `PUID`) |
-| `CONFIG_PATH` | `config.yaml` (`/config.yaml` in Docker) | YAML config file with the scan menu. In `compose.yaml` it's the host path that gets mounted there |
+| `CONFIG_PATH` | `/config` | Directory containing `brother.yaml` (`make run` uses the repo's `config/`) |
 
 Two extra flatbed-scan options beyond upstream:
 

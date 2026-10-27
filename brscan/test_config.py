@@ -15,7 +15,7 @@ def _exits(path):
 
 def main():
     with tempfile.TemporaryDirectory() as d:
-        path = os.path.join(d, 'config.yaml')
+        path = os.path.join(d, 'brother.yaml')
         with open(path, 'w') as f:
             f.write('menu:\n'
                     '  file:\n'

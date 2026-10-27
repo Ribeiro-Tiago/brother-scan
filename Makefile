@@ -31,7 +31,7 @@ run:
 	@test -n "$(SCANNER_IP)" || (echo "SCANNER_IP is required, e.g. make run SCANNER_IP=192.168.0.10 SCANNER_MODEL=MFC-L2700DW" && exit 1)
 	@test -n "$(SCANNER_MODEL)" || (echo "SCANNER_MODEL is required" && exit 1)
 	@test -n "$(ADVERTISE_IP)" || (echo "ADVERTISE_IP is required (this host's IP)" && exit 1)
-	$(VENV)/bin/brscand -A $(ADVERTISE_IP) $(BIND_IP) $(SCANNER_IP)
+	$(VENV)/bin/brscand -c config -A $(ADVERTISE_IP) $(BIND_IP) $(SCANNER_IP)
 
 ## Build the sdist tarball (dist/brscan-*.tar.gz, attached to GitHub releases)
 build:
@@ -50,7 +50,7 @@ docker-run:
 	@test -n "$(SCANNER_MODEL)" || (echo "SCANNER_MODEL is required" && exit 1)
 	docker run --rm \
 		-v $$(pwd)/output:/output \
-		-v $$(pwd)/config.yaml:/config.yaml \
+		-v $$(pwd)/config:/config:ro \
 		-e SCANNER_MODEL=$(SCANNER_MODEL) -e SCANNER_IP=$(SCANNER_IP) \
 		-e ADVERTISE_IP=$(ADVERTISE_IP) \
 		-p 54925:54925/udp \

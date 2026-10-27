@@ -1,6 +1,7 @@
 # Docker compose stack for brother-scan (e.g. paste into Dockhand).
 # Set the ${...} values in the stack's env (see .env.example). The scan
-# menu (users/folders shown on the scanner) comes from the config file.
+# menu (users/folders shown on the scanner) comes from brother.yaml in the
+# config directory.
 services:
   brother-scan:
     image: ghcr.io/ribeiro-tiago/brother-scan:latest
@@ -10,10 +11,11 @@ services:
       - "54925:54925/udp"
     volumes:
       - ${OUTPUT_PATH:-./scans}:/output
-      - ${CONFIG_PATH:-./config.yaml}:/config.yaml:ro
+      - ${CONFIG_DIR:-./config}:${CONFIG_PATH:-/config}:ro
     environment:
       SCANNER_IP: ${SCANNER_IP:?set SCANNER_IP to the scanner's IP}
       SCANNER_MODEL: ${SCANNER_MODEL:?set SCANNER_MODEL, e.g. MFC-L2700DW}
       ADVERTISE_IP: ${ADVERTISE_IP:?set ADVERTISE_IP to this host's IP}
+      CONFIG_PATH: ${CONFIG_PATH:-/config}
       PUID: ${PUID:-}
       PGID: ${PGID:-}

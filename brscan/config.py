@@ -14,9 +14,7 @@ def load_config(path):
         print('Error: %s: %s' % (e.strerror, e.filename))
         sys.exit(1)
     except IsADirectoryError:
-        # What a docker bind mount of a host file that doesn't exist gives you
-        print('Error: config file %s is a directory - check the host path '
-              'mounted there exists' % path)
+        print('Error: config file %s is a directory' % path)
         sys.exit(1)
     if not config.get('menu'):
         print('Error: no menu configured in %s' % path)
