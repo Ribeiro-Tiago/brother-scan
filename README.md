@@ -119,8 +119,8 @@ version from the commit messages since the last `vX.Y.Z` tag
 patch. Pick `major`/`minor`/`patch` in the form to override. It then
 commits the new version to `pyproject.toml`, tags it, pushes the image
 (with the driver version picked in the form, default `0.4.11-1`) to GHCR
-and creates a GitHub release with the sdist attached. The first run
-releases the version already in `pyproject.toml`.
+and creates a GitHub release with the sdist attached. It needs an
+existing `vX.Y.Z` tag on `master` to bump from (`v1.0.0` was the first).
 
 ## Configuration
 
